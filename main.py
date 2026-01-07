@@ -67,7 +67,7 @@ def generate_parquet(df: pd.DataFrame, path: str | None = "./data/data.parquet")
     """
     if not isinstance(df, pd.DataFrame):
         raise TypeError("Data should be pandas.DataFrame.")
-    logging.info("Start. Запись данных в файл в формате parquet.")
+    logging.info(f"Start. Запись данных в файл {path.split("/")[-1]}.")
     df.to_parquet(path=path)
     logging.info(f"End. Файл {path.split("/")[-1]} записан.")
 
@@ -79,14 +79,16 @@ def read_parquet(path: str | None = "./data/data.parquet") -> pd.DataFrame:
     :param path: Путь к файлу с указанием названия.
     :return: Pandas DataFrame.
     """
+    logging.info(f"Start. Чтение файла {path.split("/")[-1]}.")
     df = pd.read_parquet(path="./data/data.parquet")
+    logging.info(f"End. файл {path.split("/")[-1]} успешно прочитан.")
     return df
 
 
 def main():
     users_df = generate_data()
     generate_parquet(users_df)
-    df_from_parquet = read_parquet()
+    print(read_parquet())
 
 if __name__ == "__main__":
     main()
