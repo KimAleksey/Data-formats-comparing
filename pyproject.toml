@@ -1,0 +1,12 @@
+[project]
+name = "project-18-data-formats-comparing"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "faker>=40.1.0",
+    "fastparquet>=2025.12.0",
+    "pandas>=2.3.3",
+    "pyarrow>=22.0.0",
+]
