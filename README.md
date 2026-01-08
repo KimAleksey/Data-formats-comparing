@@ -43,8 +43,8 @@ Data-formats-comparing/
 1. Клонируем репозиторий:
 
 ```bash
-git clone https://github.com/KimAleksey/Loading-data-into-cluster-ClickHouse.git
-cd Loading-data-into-cluster-ClickHouse
+git clone https://github.com/KimAleksey/Data-formats-comparing.git
+cd Data-formats-comparing
 ```
 
 2. Установить зависимости
