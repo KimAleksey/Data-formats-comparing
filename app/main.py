@@ -1,10 +1,13 @@
 from utils.utils import *
 
 def main():
-    users_df = generate_data()
+    rows = 100000
+    users_df = generate_data(rows)
     generate_parquet(users_df)
     generate_csv(users_df)
     generate_compressed_csv(users_df)
+    generate_json(users_df)
+    print(measure_formats())
 
     # Можно посмотреть результаты.
     # print(read_parquet())

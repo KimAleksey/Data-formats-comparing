@@ -1,3 +1,4 @@
+import os
 import uuid
 import faker
 import logging
@@ -12,8 +13,11 @@ __all__= [
     "generate_parquet",
     "generate_csv",
     "generate_compressed_csv",
+    "generate_json",
     "read_csv",
     "read_parquet",
+    "read_json",
+    "measure_formats"
 ]
 
 # Конфигурация логирования
@@ -21,6 +25,14 @@ logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s | %(levelname)s | %(name)s | %(message)s",
 )
+
+
+FILES = {
+    "parquet": "data.parquet",
+    "csv": "data.csv",
+    "csv.gz": "data.csv.gz",
+    "json": "data.json",
+}
 
 
 def generate_data(rows: int | None = 100) -> pd.DataFrame:
@@ -64,10 +76,11 @@ def generate_data(rows: int | None = 100) -> pd.DataFrame:
 
     logging.info(f"End. Сгенерировано {rows} пользователей.")
     df = pd.DataFrame(list_of_dicts)
+
     return df
 
 
-def generate_parquet(df: pd.DataFrame, filename: str | None = "data.parquet") -> None:
+def generate_parquet(df: pd.DataFrame, filename: str | None = FILES["parquet"]) -> None:
     """
     Загружает данные в формат parquet.
 
@@ -83,7 +96,7 @@ def generate_parquet(df: pd.DataFrame, filename: str | None = "data.parquet") ->
     logging.info(f"End. Файл {filename} записан.")
 
 
-def read_parquet(filename: str | None = "data.parquet") -> pd.DataFrame:
+def read_parquet(filename: str | None = FILES["parquet"]) -> pd.DataFrame:
     """
     Считывает parquet файл и возвращает в виде pandas.DataFrame.
 
@@ -94,10 +107,11 @@ def read_parquet(filename: str | None = "data.parquet") -> pd.DataFrame:
     parquet_path = Path(__file__).parent.parent / "data" / filename
     df = pd.read_parquet(path=parquet_path)
     logging.info(f"End. файл {filename} успешно прочитан.")
+
     return df
 
 
-def generate_csv(df: pd.DataFrame, filename: str | None = "data.csv") -> None:
+def generate_csv(df: pd.DataFrame, filename: str | None = FILES["csv"]) -> None:
     """
     Загружает данные в формат csv.
 
@@ -113,7 +127,7 @@ def generate_csv(df: pd.DataFrame, filename: str | None = "data.csv") -> None:
     logging.info(f"End. Файл {filename} записан.")
 
 
-def generate_compressed_csv(df: pd.DataFrame, filename: str | None = "data.csv.gz") -> None:
+def generate_compressed_csv(df: pd.DataFrame, filename: str | None = FILES["csv.gz"]) -> None:
     """
     Загружает данные в формат csv.gz
 
@@ -133,7 +147,7 @@ def generate_compressed_csv(df: pd.DataFrame, filename: str | None = "data.csv.g
     logging.info(f"End. Файл {filename} записан.")
 
 
-def read_csv(filename: str | None = "data.csv") -> pd.DataFrame:
+def read_csv(filename: str | None = FILES["csv"]) -> pd.DataFrame:
     """
     Считывает csv файл и возвращает в виде pandas.DataFrame.
 
@@ -144,4 +158,56 @@ def read_csv(filename: str | None = "data.csv") -> pd.DataFrame:
     csv_path = Path(__file__).parent.parent / "data" / filename
     df = pd.read_csv(filepath_or_buffer=csv_path)
     logging.info(f"End. файл {filename} успешно прочитан.")
+
     return df
+
+
+def generate_json(df: pd.DataFrame, filename: str | None = FILES["json"]) -> None:
+    """
+    Загружает данные в формат json
+
+    :param df: Данные в формате pd.DataFrame.
+    :param filename: Названия файла.
+    :return: None.
+    """
+    if not isinstance(df, pd.DataFrame):
+        raise TypeError("Data should be pandas.DataFrame.")
+    logging.info(f"Start. Запись данных в файл {filename}.")
+    json_path = Path(__file__).parent.parent / "data" / filename
+    df.to_json(path_or_buf=json_path)
+    logging.info(f"End. Файл {filename} записан.")
+
+
+def read_json(filename: str | None = FILES["json"]) -> pd.DataFrame:
+    """
+    Считывает json файл и возвращает в виде pandas.DataFrame.
+
+    :param filename: Названия файла.
+    :return: Pandas DataFrame.
+    """
+    logging.info(f"Start. Чтение файла {filename}.")
+    json_path = Path(__file__).parent.parent / "data" / filename
+    df = pd.read_json(path_or_buf=json_path)
+    logging.info(f"End. файл {filename} успешно прочитан.")
+
+    return df
+
+
+def measure_formats() -> pd.DataFrame:
+    """
+    Функция, которая позволяет посчитать объём файлов в разных форматах.
+    :return: pd.DataFrame c данными.
+    """
+    results = []
+
+    for format_name, filename in FILES.items():
+        path = Path(__file__).parent.parent / "data" / filename
+        if os.path.exists(path):
+            size = os.path.getsize(path)
+
+            results.append({
+                "format": format_name,
+                "size_mb": size / (1024 * 1024),
+            })
+
+    return pd.DataFrame(results)
